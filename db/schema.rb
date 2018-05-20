@@ -10,15 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180520184516) do
+ActiveRecord::Schema.define(version: 20180520189999) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "characters", force: :cascade do |t|
+    t.string "name", default: "", null: false
+    t.string "tier", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "matches", force: :cascade do |t|
+    t.bigint "player_one_id"
+    t.bigint "player_two_id"
+    t.bigint "player_one_character_id"
+    t.bigint "player_two_character_id"
+    t.bigint "winner_character_id"
+    t.bigint "winner_id"
+    t.bigint "stage_id"
+    t.boolean "player_one_win", default: true, null: false
+    t.integer "player_one_elo_change"
+    t.integer "player_two_elo_change"
+    t.string "confirmation_uuid", default: "0", null: false
+    t.index ["player_one_character_id"], name: "index_matches_on_player_one_character_id"
+    t.index ["player_one_id"], name: "index_matches_on_player_one_id"
+    t.index ["player_two_character_id"], name: "index_matches_on_player_two_character_id"
+    t.index ["player_two_id"], name: "index_matches_on_player_two_id"
+    t.index ["stage_id"], name: "index_matches_on_stage_id"
+    t.index ["winner_character_id"], name: "index_matches_on_winner_character_id"
+    t.index ["winner_id"], name: "index_matches_on_winner_id"
   end
 
   create_table "stages", force: :cascade do |t|
@@ -40,4 +62,11 @@ ActiveRecord::Schema.define(version: 20180520184516) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "matches", "characters", column: "player_one_character_id"
+  add_foreign_key "matches", "characters", column: "player_two_character_id"
+  add_foreign_key "matches", "characters", column: "winner_character_id"
+  add_foreign_key "matches", "stages"
+  add_foreign_key "matches", "users", column: "player_one_id"
+  add_foreign_key "matches", "users", column: "player_two_id"
+  add_foreign_key "matches", "users", column: "winner_id"
 end
